@@ -1,0 +1,183 @@
+{% extends 'main/base.html' %}
+{% block navbar %}
+<a href="/home/" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Connection</a>
+<a href="/queryhelper/" class="nav-item nav-link"><i class="fa fa-th me-2"></i>query helper</a>
+<a href="/visualization/" class="nav-item nav-link active"><i class="fa fa-chart-bar me-2"></i>visualization</a>
+<a href="/history/" class="nav-item nav-link"><i class="fa fa-table me-2"></i>History</a>
+<a href="/how_to_use/" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>how to use</a>
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+<div class="row g-4">
+    <div class="col-sm-12">
+        <div class="bg-light rounded h-100 p-4">
+            <h6 class="mb-4">Select Input Type</h6>
+            <form onsubmit="event.preventDefault(); sendInputType()">
+            <div class="form-floating mb-3">
+                {% csrf_token %}
+                <select class="form-select" id="inputType"
+                            aria-label="Floating label select example">
+                    <option selected>Select Input Type</option>
+                    <option value="postgres">postgres</option>
+                    <option value="mysql">mysql</option>
+                    <option value="mongoDB">mongoDB</option>
+                    <option value="file">csv,excel,json</option>
+                </select>
+            </div>
+            <div class="m-n2">
+                <button type="submit" class="btn btn-primary m-2">Confrim</button>
+             </div>
+            </form>
+            <div id="responseMessage"></div>
+        </div>
+
+    </div>
+</div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="postgresModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inputModalLabel">Postgres</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form onsubmit="event.preventDefault(); submitInput()">
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-sm-12 col-xl-6">
+                        <label for="userInput" class="form-label">user</label>
+                        <input type="text" class="form-control" id="postgresUser" placeholder="">
+                        <label for="userInput" class="form-label">password</label>
+                        <input type="text" class="form-control" id="postgresPassword" placeholder="">
+                    </div>
+                    <div class="col-sm-12 col-xl-6">
+                        <label for="userInput" class="form-label">Host</label>
+                        <input type="text" class="form-control" id="postgresHost" placeholder="">
+                        <label for="userInput" class="form-label">Port</label>
+                        <input type="text" class="form-control" id="postgresPort" placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" >connect</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="mysqlModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inputModalLabel">MYSQL</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form onsubmit="event.preventDefault(); submitInput()">
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-sm-12 col-xl-6">
+                        <label for="userInput" class="form-label">user</label>
+                        <input type="text" class="form-control" id="mysqlUser" placeholder="">
+                        <label for="userInput" class="form-label">password</label>
+                        <input type="text" class="form-control" id="mysqlPassword" placeholder="">
+                    </div>
+                    <div class="col-sm-12 col-xl-6">
+                        <label for="userInput" class="form-label">Host</label>
+                        <input type="text" class="form-control" id="mysqlHost" placeholder="">
+                        <label for="userInput" class="form-label">Port</label>
+                        <input type="text" class="form-control" id="mysqlPort" placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" >connect</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="mongodbModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inputModalLabel">MongoDB</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form onsubmit="event.preventDefault(); submitInput()">
+            <div class="modal-body">
+                <label for="userInput" class="form-label">MongoDB url:</label>
+                <input type="url" class="form-control" id="mongodbUrl" placeholder="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" >connect</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inputModalLabel">File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form onsubmit="event.preventDefault(); submitInput()">
+            <div class="modal-body">
+                <label for="userInput" class="form-label">CSV,Excel,JSON:</label>
+                <input type="file" class="form-control" id="fileInput" placeholder="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" >connect</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function sendInputType(){
+        const inputType = document.getElementById('inputType').value;
+        document.getElementById('responseMessage').innerText = inputType;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        if(inputType == "postgres"){
+            let modal =new bootstrap.Modal(document.getElementById('postgresModal'));
+            modal.show();
+        } else if(inputType == "mongoDB"){
+            let modal =new bootstrap.Modal(document.getElementById('mongodbModal'));
+            modal.show();
+        } else if(inputType == "mysql"){
+            let modal =new bootstrap.Modal(document.getElementById('mysqlModal'));
+            modal.show();
+        }else if( inputType == "file"){
+            let modal =new bootstrap.Modal(document.getElementById('fileModal'));
+            modal.show();
+        }
+        fetch('/get_database_type/', {
+            method: 'POST',
+            body: JSON.stringify({ inputType: inputType }),
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('responseMessage').innerText = data.message;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+{% endblock %}
