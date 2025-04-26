@@ -44,6 +44,12 @@ class ConnectionView(View):
             return JsonResponse({'message': 'Invalid request method'})
         
     def upload_file(request):
+        session_manager = DatabaseSessionManager()
+        user_id = request.session['user']
+        
+        if not session_manager.validate_session(user_id):
+            session_manager.create_session(user_id, request.session['user_name'])
+
         if request.method != 'POST':
             return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
     
@@ -68,13 +74,17 @@ class ConnectionView(View):
         with open(file_path, 'wb+') as destination:
             for chunk in uploaded_file.chunks():
                 destination.write(chunk)
-    
+        
         try:
             if file_ext == '.csv':
                 df = pd.read_csv(file_path)
+                session = session_manager.get_session(user_id)
+                session['pandas_df'] = df
             else:
                 # Excel files
                df = pd.read_excel(file_path)
+               session = session_manager.get_session(user_id)
+               session['pandas_df'] = df
         # Example processing - you can modify this part based on your needs
             row_count = len(df)
             column_count = len(df.columns)
@@ -95,7 +105,26 @@ class ConnectionView(View):
             if os.path.exists(file_path):
                 os.remove(file_path)
             return JsonResponse({'error': str(e)}, status=500)
+    
+    @staticmethod
+    def pandas_sample(request):
+        session_manager = DatabaseSessionManager()
+        user_id = request.session['user']
         
+        if not session_manager.validate_session(user_id):
+            session_manager.create_session(user_id, request.session['user_name'])
+        try:
+            session = session_manager.get_session(user_id)
+            df = session['pandas_df']
+            print(df)
+            df = df.applymap(str)
+            records = df.to_dict('records')
+            columns = [{"data": col, "title": col} for col in df.columns]
+            return JsonResponse({"data": records, "columns": columns}, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+
     @staticmethod
     def get_connection_parameters(request):
         if 'user' not in request.session:

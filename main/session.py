@@ -28,6 +28,7 @@ class DatabaseSessionManager:
                 'query':None,
                 'input_query':None,
                 'data_frame':None,
+                'pandas_df':None,
             }
             return session_id
 
