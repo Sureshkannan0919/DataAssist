@@ -43,3 +43,25 @@ def handle_user_query(db_type, user_query, metadata=None):
         return response.text.strip()
     except Exception as e:
         return f"Error generating query: {str(e)}"
+
+
+def pandas_query(user_query,db_type,metadata):
+    model = initialize_gemini()
+    prompt = f"""
+    Generate a pandas query that addresses the following request:
+    
+    USER REQUEST: {user_query}
+    
+    DATABASE TYPE: {db_type}
+
+    DATABASE METADATA: {metadata if metadata else 'Not provided'}
+    """
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        return f"Error generating query: {str(e)}"
+
+    
+
