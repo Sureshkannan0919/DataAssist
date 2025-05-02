@@ -1,10 +1,12 @@
 {% extends 'main/base.html' %}
 {% block navbar %}
+<form onsubmit="event.preventDefault();">
 <a href="/home/" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Connection</a>
 <a href="/queryhelper/" class="nav-item nav-link"><i class="fa fa-th me-2"></i>query helper</a>
 <a href="/visualization/" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>visualization</a>
 <a href="/history/" class="nav-item nav-link active"><i class="fa fa-table me-2"></i>History</a>
 <a href="/how_to_use/" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>how to use</a>
+</form>
 {% endblock %}
 {% block content %}
 {% if history_records %}
