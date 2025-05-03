@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 dataassist.wsgi:application
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    environment:
+      - DJANGO_SETTINGS_MODULE=dataassist.settings
+      - DJANGO_DEBUG=False
+
+volumes:
+  postgres_data:
+    
