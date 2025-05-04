@@ -49,3 +49,5 @@ tzdata==2025.1
 uritemplate==4.1.1
 urllib3==2.3.0
 gunicorn==20.1.0
+matplotlib==3.8.0
+seaborn==0.13.0

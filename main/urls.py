@@ -33,4 +33,5 @@ urlpatterns = [
     path('get_database_type/',ConnectionView.get_database_type,name='get_database_type'),
     path('get_connection_parameters/',ConnectionView.get_connection_parameters,name='get_connection_parameters'),
     path('pandas_sample/',ConnectionView.pandas_sample,name='pandas_sample'),
+    path('generate_visualization/',VisualizationView.generate_visualization,name='generate_visualization'),
 ]

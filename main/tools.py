@@ -64,3 +64,4 @@ def extract_sql_queries(input_text):
     queries = [match.group().strip() for match in sql_pattern.finditer(input_text)]
     
     return "\n".join(queries)
+

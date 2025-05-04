@@ -10,176 +10,71 @@
 {% endblock %}
 {% block content %}
 
-<div class="container-fluid pt-4 px-4">
-    <div class="row g-4">
-<div class="row g-4">
-    <div class="col-sm-12">
-        <div class="bg-light rounded h-100 p-4">
-            <h6 class="mb-4">Select Input Type</h6>
-            <form onsubmit="event.preventDefault(); sendInputType()">
-            <div class="form-floating mb-3">
-                {% csrf_token %}
-                <select class="form-select" id="inputType"
-                            aria-label="Floating label select example">
-                    <option selected>Select Input Type</option>
-                    <option value="postgres">postgres</option>
-                    <option value="mysql">mysql</option>
-                    <option value="mongoDB">mongoDB</option>
-                    <option value="file">csv,excel,json</option>
-                </select>
-            </div>
-            <div class="m-n2">
-                <button type="submit" class="btn btn-primary m-2">Confrim</button>
-             </div>
-            </form>
-            <div id="responseMessage"></div>
+<div class="col-12">
+    <div class="bg-light rounded h-100 p-4">
+       <div class="row row-demo-grid">
+        <h6 class="mb-4">Visualization</h6>
+        <div class="col-12 mb-3">
+            <button onclick="generate_visualization()" class="btn btn-primary" id="generate_visualization">
+                <i class="fa fa-chart-bar me-2"></i>Generate Visualization
+            </button>
         </div>
-
-    </div>
-</div>
-    </div>
-</div>
-<!-- Modal -->
-<div class="modal fade" id="postgresModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="inputModalLabel">Postgres</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form onsubmit="event.preventDefault(); submitInput()">
-            <div class="modal-body">
-                <div class="row g-4">
-                    <div class="col-sm-12 col-xl-6">
-                        <label for="userInput" class="form-label">user</label>
-                        <input type="text" class="form-control" id="postgresUser" placeholder="">
-                        <label for="userInput" class="form-label">password</label>
-                        <input type="text" class="form-control" id="postgresPassword" placeholder="">
-                    </div>
-                    <div class="col-sm-12 col-xl-6">
-                        <label for="userInput" class="form-label">Host</label>
-                        <input type="text" class="form-control" id="postgresHost" placeholder="">
-                        <label for="userInput" class="form-label">Port</label>
-                        <input type="text" class="form-control" id="postgresPort" placeholder="">
-                    </div>
+        <div class="col-12">
+            <div id="loading" class="text-center" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
+                <p class="mt-2">Generating visualization...</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" >connect</button>
+            <div id="errorMessage" class="alert alert-danger" role="alert" style="display: none;"></div>
+            <div id="visualizationContainer" class="text-center">
+                <img id="visualization_image" src="" alt="Visualization" class="img-fluid" style="display: none;">
             </div>
-            </form>
         </div>
+       </div>
     </div>
 </div>
-<div class="modal fade" id="mysqlModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="inputModalLabel">MYSQL</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form onsubmit="event.preventDefault(); submitInput()">
-            <div class="modal-body">
-                <div class="row g-4">
-                    <div class="col-sm-12 col-xl-6">
-                        <label for="userInput" class="form-label">user</label>
-                        <input type="text" class="form-control" id="mysqlUser" placeholder="">
-                        <label for="userInput" class="form-label">password</label>
-                        <input type="text" class="form-control" id="mysqlPassword" placeholder="">
-                    </div>
-                    <div class="col-sm-12 col-xl-6">
-                        <label for="userInput" class="form-label">Host</label>
-                        <input type="text" class="form-control" id="mysqlHost" placeholder="">
-                        <label for="userInput" class="form-label">Port</label>
-                        <input type="text" class="form-control" id="mysqlPort" placeholder="">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" >connect</button>
-            </div>
-            </form>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="mongodbModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="inputModalLabel">MongoDB</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form onsubmit="event.preventDefault(); submitInput()">
-            <div class="modal-body">
-                <label for="userInput" class="form-label">MongoDB url:</label>
-                <input type="url" class="form-control" id="mongodbUrl" placeholder="">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" >connect</button>
-            </div>
-            </form>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="inputModalLabel">File</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form onsubmit="event.preventDefault(); submitInput()">
-            <div class="modal-body">
-                <label for="userInput" class="form-label">CSV,Excel,JSON:</label>
-                <input type="file" class="form-control" id="fileInput" placeholder="">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" >connect</button>
-            </div>
-            </form>
-        </div>
-    </div>
-</div>
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    function sendInputType(){
-        const inputType = document.getElementById('inputType').value;
-        document.getElementById('responseMessage').innerText = inputType;
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        if(inputType == "postgres"){
-            let modal =new bootstrap.Modal(document.getElementById('postgresModal'));
-            modal.show();
-        } else if(inputType == "mongoDB"){
-            let modal =new bootstrap.Modal(document.getElementById('mongodbModal'));
-            modal.show();
-        } else if(inputType == "mysql"){
-            let modal =new bootstrap.Modal(document.getElementById('mysqlModal'));
-            modal.show();
-        }else if( inputType == "file"){
-            let modal =new bootstrap.Modal(document.getElementById('fileModal'));
-            modal.show();
-        }
-        fetch('/get_database_type/', {
+    function generate_visualization() {
+        const button = document.getElementById('generate_visualization');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const visualizationImage = document.getElementById('visualization_image');
+        
+        // Reset states
+        button.disabled = true;
+        loading.style.display = 'block';
+        errorMessage.style.display = 'none';
+        visualizationImage.style.display = 'none';
+        
+        fetch('/generate_visualization/', {
             method: 'POST',
-            body: JSON.stringify({ inputType: inputType }),
             headers: {
-                'X-CSRFToken': csrfToken,
+                'X-CSRFToken': '{{ csrf_token }}'
             },
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            document.getElementById('responseMessage').innerText = data.message;
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            visualizationImage.src = data.fig;
+            visualizationImage.style.display = 'block';
         })
         .catch(error => {
-            console.error('Error:', error);
+            errorMessage.textContent = `Error: ${error.message}`;
+            errorMessage.style.display = 'block';
+        })
+        .finally(() => {
+            button.disabled = false;
+            loading.style.display = 'none';
         });
     }
 </script>
-
 {% endblock %}

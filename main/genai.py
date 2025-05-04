@@ -52,7 +52,7 @@ def pandas_query(user_query,db_type,metadata):
     
     USER REQUEST: {user_query}
     
-    DATABASE TYPE: {db_type}
+    column and datatypes: {db_type}
 
     DATABASE METADATA: {metadata if metadata else 'Not provided'}
     """
