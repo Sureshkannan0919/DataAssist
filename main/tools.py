@@ -1,5 +1,6 @@
 from urllib.parse import urlparse
 import re
+import json
 
 def parse_database_url(url):
     # Parse the URL
@@ -42,11 +43,42 @@ def parse_database_url(url):
 
 
 
-def query_parser(query):
+# def query_parser(query):
     
-    match = re.search(r"\(\s*({.*?})\s*\)", query, re.DOTALL)
+#     match = re.search(r"\(\s*({.*?})\s*\)", query, re.DOTALL)
 
-    return match.group(1).strip() if match else None
+#     return match.group(1).strip() if match else Noneimport json
+
+
+
+# def query_parser(query):
+#     Match a JSON-like dictionary starting with '{' and ending with '}'
+#   match = re.search(r'({.*})', query, re.DOTALL)
+#    return match.group(1).strip() if match else None
+# def query_parser(query):
+#     # Extract JSON-like content using regex
+#     match = re.search(r'({.*})', query, re.DOTALL)
+#     if match:
+#         try:
+#             # Convert the string to a Python dict
+#             return json.loads(match.group(1).strip())
+#         except json.JSONDecodeError as e:
+#             print("JSON Decode Error:", e)
+#             return None
+#     return None
+
+def query_parser(query):
+    match = re.search(r'({.*})', query, re.DOTALL)
+    if match:
+        try:
+            parsed = json.loads(match.group(1).strip())
+            return parsed if isinstance(parsed, dict) else None
+        except json.JSONDecodeError as e:
+            print("JSON Decode Error:", e)
+            return None
+    return None
+
+
 
 def extract_sql_queries(input_text):
     """

@@ -11,17 +11,16 @@ class HistoryView(View):
 
     @staticmethod
     def save_history(request):
-        if request.method != 'POST':
-            return HttpResponse("Invalid request method", status=405)
             
         user_id = request.session.get('user')
         if not user_id:
-            return HttpResponse("User not logged in", status=401)
+            return JsonResponse({"error": "User not logged in"}, status=401)
         
         try:
             user = User.objects.get(id=user_id)  # Get actual User instance
         except User.DoesNotExist:
-            return HttpResponse("User not found", status=404)
+            return JsonResponse({"error": "User not found"}, status=404)
+
         session_manager = DatabaseSessionManager()
         user_id = request.session['user']
 
@@ -36,7 +35,7 @@ class HistoryView(View):
         try:
             pandas_df = json.loads(pandas_df_json)  # Ensure valid JSON
         except json.JSONDecodeError:
-            return HttpResponse("Invalid JSON format", status=400)
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
 
         # Save history record
         history = History(

@@ -46,10 +46,15 @@ class QueryHelper(View):
                 "columns": columns,
                 "data_type": data_type
                 }
-                parsedquery=query_parser(handle_user_query(session["db_type"], query, metadata))
+                generated_query=handle_user_query(session["db_type"], query, metadata)
+                print(generated_query)
+                parsedquery=query_parser(generated_query)
+                print(type(parsedquery))
+                print(parsedquery)
                 session['query']=parsedquery
+
                 return JsonResponse({
-                'message': parsedquery
+                'message': str(parsedquery)
                 })
             elif session["db_type"] == "postgres" or session["db_type"] == "mysql":
                 columns, data_type  =session['manager'].get_table_schema(session["current_table"])
@@ -96,21 +101,38 @@ class QueryHelper(View):
         
         try:
             session = session_manager.get_session(user_id)
-            if session["db_type"] == "mongoDB" or session["db_type"] == "postgres" or session["db_type"] == "mysql":
+            if session["db_type"] == "mongoDB":
+                query=session['query']
+                data = session['manager'].execute_query(query)
+                df=pd.DataFrame(data)
+                df=df.drop("_id",axis=1)
+                session['data_frame']=df
+                records = df.to_dict('records')
+                print("records:",records)
+                columns = [{"data": col, "title": col} for col in df.columns]
+                print("columns:",columns)
+                return JsonResponse({"data": records, "columns": columns}, safe=False)
+            
+            elif session["db_type"] == "postgres" or session["db_type"] == "mysql":
                 query=session['query']
                 data = session['manager'].execute_query(query)
                 df=pd.DataFrame(data)
                 session['data_frame']=df
                 records = df.to_dict('records')
+                print("records:",records)
                 columns = [{"data": col, "title": col} for col in df.columns]
+                print("columns:",columns)
                 return JsonResponse({"data": records, "columns": columns}, safe=False)
+            
             elif session["db_type"] == "pandas":
                 df=session['pandas_df']
                 df=preprocess_data(df)
                 query=session['query']
                 result=execute_query(df,query)
                 records=result.to_dict('records')
+                print(records)
                 columns=[{"data": col, "title": col} for col in result.columns]
+                print(columns)
                 return JsonResponse({"data": records, "columns": columns}, safe=False)
             else:
                 return JsonResponse({'error': 'Invalid database type'}, status=400)

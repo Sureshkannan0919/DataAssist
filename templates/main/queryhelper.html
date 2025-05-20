@@ -5,10 +5,22 @@
 <a href="/queryhelper/" class="nav-item nav-link active"><i class="fa fa-th me-2"></i>query helper</a>
 <a href="/visualization/" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>visualization</a>
 <a href="/history/" class="nav-item nav-link"><i class="fa fa-table me-2"></i>History</a>
-<a href="/how_to_use/" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>how to use</a>
+<!--<a href="/how_to_use/" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>how to use</a>-->
 </form>
 {% endblock %}
 {% block content %}
+<div class="col-12">
+    <div class="bg-light rounded h-100 p-4">
+       <div class="row row-demo-grid">
+        <h6 class="mb-4">queryhelper</h6>
+        <div class="col-12 mb-3">
+            <button onclick ="" class="btn btn-primary" id="history_save">
+                <i class="fa fa-table me-2"></i>Save to History
+            </button>
+        </div>
+       </div>
+    </div>
+</div>
 <div class="col-12">
     <div class="bg-light rounded h-100 p-4">
        <div class="row row-demo-grid">
@@ -191,6 +203,47 @@ function loadTableData() {
         complete: function() {
             $('#loading').hide();
         }
+    });
+}
+
+function saveToHistory() {
+    const button = document.getElementById('history_save');
+    const originalText = button.innerHTML;
+    
+    // Disable button and show loading state
+    button.disabled = true;
+    button.innerHTML = `
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Saving...
+    `;
+
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Send request to save history
+    fetch('/save_history', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        // Show success message
+        alert(data.message || 'History saved successfully');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save history: ' + error.message);
+    })
+    .finally(() => {
+        // Reset button state
+        button.disabled = false;
+        button.innerHTML = originalText;
     });
 }
 </script>

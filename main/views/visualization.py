@@ -230,10 +230,9 @@ class VisualizationView(View):
             session_manager.create_session(user_id, request.session['user_name'])
         try:
             session = session_manager.get_session(user_id)
-            if session["db_type"] == "mongodb" or session["db_type"] == "mysql" or session["db_type"] == "postgresql":
+            if session["db_type"] == "mongoDB" or session["db_type"] == "mysql" or session["db_type"] == "postgres":
                 df = session['data_frame']
                 fig_path = visualize_dataframe(df)
-                # Return the path relative to static files
                 return JsonResponse({'fig': '/static/' + fig_path})
             elif session["db_type"] == "pandas":
                 df = session['pandas_df']
