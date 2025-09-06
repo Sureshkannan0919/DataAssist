@@ -8,3 +8,8 @@
 *.pywz
 *.pyzw
 .dockerignore
+
+# Docker cleanup script (temporary)
+cleanup-docker.sh
+
+# Keep deploy.sh for production

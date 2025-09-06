@@ -14,7 +14,7 @@
        <div class="row row-demo-grid">
         <h6 class="mb-4">queryhelper</h6>
         <div class="col-12 mb-3">
-            <button onclick ="" class="btn btn-primary" id="history_save">
+            <button onclick ="saveToHistory()" class="btn btn-primary" id="history_save">
                 <i class="fa fa-table me-2"></i>Save to History
             </button>
         </div>
@@ -221,12 +221,13 @@ function saveToHistory() {
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
     // Send request to save history
-    fetch('/save_history', {
+    fetch('/save_history/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken,
         }
+
     })
     .then(response => response.json())
     .then(data => {

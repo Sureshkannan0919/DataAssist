@@ -1,17 +1,22 @@
-version: '3'
+version: '3.8'
 
 services:
   web:
     build: .
     command: gunicorn --bind 0.0.0.0:8000 --workers 3 dataassist.wsgi:application
     volumes:
-      - .:/app
+      - media_files:/app/media
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
-      - DJANGO_SETTINGS_MODULE=dataassist.settings
-      - DJANGO_DEBUG=False
+      - DJANGO_SETTINGS_MODULE=dataassist.settings_prod
+      - SECRET_KEY=django-insecure-change-this-in-production
+      - DEBUG=False
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    # Uncomment the line below if you create a .env file
+    # env_file:
+    #   - .env
 
 volumes:
-  postgres_data:
+  media_files:
     

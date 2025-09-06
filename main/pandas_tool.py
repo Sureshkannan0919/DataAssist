@@ -14,35 +14,44 @@ def clean_data(data):
 
 def pandas_parse_query(query_str: str) -> str:
     """
-    Parse a string containing pandas DataFrame filtering code and return the raw
-    executable code as a string.
+    Parse a string containing pandas DataFrame filtering code or a raw logical expression,
+    and return the executable pandas code as a string.
 
-    The function handles two types of queries:
+    Handles:
     1. df.query() style: df.query('offer > 50 and cprice < 1000')
-    2. Boolean indexing style: df[(df['ocassion'] == 'formal') & (df['offer'] == 60.0)]
+    2. Boolean indexing: df[(df['ocassion'] == 'formal') & (df['offer'] == 60.0)]
+    3. Raw logical expressions: gender == 'male' and cprice < 1000
 
     Args:
         query_str (str): String containing the query code
 
     Returns:
-        str: Raw executable pandas filtering code
+        str: Executable pandas filtering code
     """
-    # Clean up the query string (remove quotes, extra spaces, etc.)
     query_str = query_str.strip()
 
-    # Check if it's a query style
-    query_pattern = r"df\.query\('([^']+)'\)"
-    query_match = re.search(query_pattern, query_str)
-
+    # 1. df.query() style
+    query_pattern = r"df\.query\((['\"])(.*?)\1\)"
+    query_match = re.fullmatch(query_pattern, query_str)
     if query_match:
-        return f"df.query('{query_match.group(1)}')"
+        return f"df.query({query_match.group(1)}{query_match.group(2)}{query_match.group(1)})"
 
-    # Check if it's a boolean indexing style
+    # 2. Boolean indexing style
     boolean_pattern = r"df\[(.*)\]"
-    boolean_match = re.search(boolean_pattern, query_str)
-
+    boolean_match = re.fullmatch(boolean_pattern, query_str)
     if boolean_match:
         return f"df[{boolean_match.group(1)}]"
+
+    # 3. Raw logical expression (e.g., "gender == 'male' and cprice < 1000")
+    # Heuristic: contains 'and'/'or' or comparison operators, but not 'df.'
+    if (
+        any(op in query_str for op in [' and ', ' or ', '==', '!=', '<', '>', '<=', '>='])
+        and 'df.' not in query_str
+        and 'df[' not in query_str
+    ):
+        # Escape single quotes inside the expression
+        safe_query = query_str.replace("'", "\\'")
+        return f"df.query('{safe_query}')"
 
     return "# Could not parse query"
 
